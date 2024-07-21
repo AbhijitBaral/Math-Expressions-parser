@@ -117,7 +117,7 @@ Stack *parser(token *currentToken){
 
         else if(currentToken->type == TOKEN_OPERATOR){
             //This while loop is to pop elemnts from the opStack
-            while(strcmp(opStack->stack[opStack->top].text,"(")!=0 && (P(opStack->stack[opStack->top])>P(*currentToken) ||(P(opStack->stack[opStack->top])==P(*currentToken)&&strcmp(currentToken->text,"-")==0/*||strcmp(currentToken->text,"-")==0*/))){
+            while(strcmp(opStack->stack[opStack->top].text,"(")!=0 && (P(opStack->stack[opStack->top])>P(*currentToken) ||(P(opStack->stack[opStack->top])==P(*currentToken)))){
             
                 pop(opStack);
                 push(postfixArray,pPopped);
