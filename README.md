@@ -40,20 +40,20 @@ The shunting yard algorithm is employed to achieve this task.
 
 
 A very simple recursive algorithm though memory heavy and slow.  
-> Sequentially Scan across the received Array of tokens.  
+>Sequentially Scan across the received Array of tokens.  
                              +-----------------------------+    +-------------------+  
-> If a sub-array of the form |operand | operand | operator | or |operand | function | is found,evaluate,    
+>If a sub-array of the form |operand | operand | operator | or |operand | function | is found,evaluate,    
                              +-----------------------------+    +-------------------+  
   store in a token of type numeral. Push the token into stackA.  
 
-> In case three elements don't form the defined subarray, simply push consecutively.  
+>In case three elements don't form the defined subarray, simply push consecutively.  
   
-> Repeat steps 2-3 untill all tokens have been scanned.  
+>Repeat steps 2-3 untill all tokens have been scanned.  
   
-> Use stackA as the new Array of tokens and repeat steps 1-3 but using stackB for the intended purpose  
+>Use stackA as the new Array of tokens and repeat steps 1-3 but using stackB for the intended purpose  
   of stackA in step 2.  
 
-> Empty stackA ans repeat steps 1-5 untill the stack has a single element. !!
+>Empty stackA ans repeat steps 1-5 untill the stack has a single element. !!
 
   
 
