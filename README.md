@@ -12,10 +12,6 @@ to the Reverse Polish Notation.
   
 Each of the above functions can be used independently with the appropriate headers defined. 
 
-* First, the input string is Tokenized into meaningful components using a Lexer.   
-* The Token sequence is converted into an Abstract Syntax Tree that represents the function's structure using  
-a parser
-* The Tree is traversed to evaluate the function  
 
 | Lexer | 
 ---------
