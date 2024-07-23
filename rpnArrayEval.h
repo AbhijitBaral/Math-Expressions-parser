@@ -16,13 +16,6 @@ typedef struct rpnArr{
     int top;
 }rpnArr;
 
-
-typedef struct stackAB{
-    rpnArr* stackA;
-    rpnArr* stackB;
-    int sel;    //To select the stack to scan from and store into during recursion
-}stackAB;
-
 double eval(Stack *postfix);
 
 #endif

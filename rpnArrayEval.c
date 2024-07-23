@@ -10,66 +10,105 @@ double val;
 
 double rpnArrayEval(Stack *postfixArray){
     
-    rpnArr *Arr=(rpnArr*)malloc(sizeof(rpnArr));
-    if(Arr==NULL){
-        fprintf(stderr,"memory allocation for struct rpnArr failed");
+
+    rpnArr *stackA=(rpnArr*)malloc(sizeof(rpnArr));
+    if(stackA==NULL){
+        fprintf(stderr,"memory allocation for stackA failed");
+        return 1;
+    } 
+    stackA->rpnArr=(evalToken*)malloc(30*sizeof(evalToken));
+    if(stackA->rpnArr==NULL){
+        fprintf(stderr, "Memory allocation failed for the stackA->rpnArr");
         return 1;
     }
     
-    Arr->rpnArr=(Token*)malloc(30*sizeof(Token));
-    if(Arr->rpnArr==NULL){
-        fprintf(stderr, "Memory allocation failed for the evalToken Array");
-        return 1;
-    }
-    
+
     //Accepted from the parser function
     //To be written in the main file: double rpnArrayEval(parser(tokensHead));
     for(int i=1;i<=postfixArray->top;i++){
-        Arr->rpnArr[i-1].tmain=postfixArray->stack[i];
+        stackA->rpnArr[i-1].tmain=postfixArray->stack[i];
         if(postfixArray->stack[i].type==TOKEN_NUMBER)
-            Arr->rpnArr[i-1].num=atof(postfixArray->stack[i].text);
+            stackA->rpnArr[i-1].num=atof(postfixArray->stack[i].text);
     
         else if(postfixArray->stack[i].type==TOKEN_VARIABLE)
-            Arr->rpnArr[i-1].num=x0;
+            stackA->rpnArr[i-1].num=x0;
     
         else
-            Arr->rpnArr[i-1].num=NULL;
-        Arr->top=postfixArray->top-1;
+            stackA->rpnArr[i-1].num=NULL;
+        stackA->top=postfixArray->top-1;
     }
+    free(postfixArray);
+   
+
+    rpnArr *stackB=(rpnArr*)malloc(sizeof(rpnArr));
+    if(stackA==NULL){
+        fprintf(stderr,"Memory allocation failed for stackB");
+        return 1;
+    }
+    stackB->rpnArr=(evalToken*)malloc(30*sizeof(evalToken));
+    if(stackB->rpnArr==NULL){
+        fprintf(stderr,"Memory allocation for stackB->rpnArr failed");
+        return 1;
+    }
+    stackB->top=-1;
+    rpnArr *temp=stackB;
     
-    stackAB StackAB;
-    StackAB.stackA=(rpnArr*)malloc(sizeof(rpnArr));
-    StackAB.stackA->rpnArr=(evalToken*)malloc((Arr->top)*sizeof(evalToken));
-    StackAB.stackB=(rpnArr*)malloc(sizeof(rpnArr));
-    stackAB.stackB->rpnArr=(evalToken*)malloc((Arr->top)*sizeof(evalToken));
+    int stackSize;
 
-    stackAB.stackB->top=-1;
-    stackAB.stackA=*Arr;
-    stackAB.sel=1;
-    free(Arr);
-    rpnArr *temp=stackAB.stackB;
-    while(stackAB.stackA->top!=0 || stackAB.stackB->top!=0){
-            for(int c1=2,c2=1; stackAB.stackA->top>=2 && c2<=stackAB.stackA->top ;c1++,c2++){
-                if(stackAB.stackA->rpnArr[c1].num==NULL && stackAB.stackA->rpnArr[c2-1].num!=NULL && stackAB.stackA->rpnArr[c2-2].num!=NULL){
-
-
-                    stackAB.stackB->rpnArr[++stackAB.stackB->top].num= "The three elements evaluated";
-                    stackAB.stackB->rpnArr[stackAB.stackB->top].tmain.type=TOKEN_NUMERAL;
+    int c1=1,c2=2;
+    while(stackA->top!=0 || stackB->top!=0){
+        while(stackA->top>=2 && c2<=stackA->top){
+                if(stackA->rpnArr[c2].tmain.type==TOKEN_OPERATOR && stackA->rpnArr[c2-1].num!=NULL && stackA->rpnArr[c2-2].num!=NULL){
+                    stackB->rpnArr[++stackB->top].num= "The three elements evaluated";
+                    stackB->rpnArr[stackB->top].tmain.type=TOKEN_NUMERAL;
+                    if(c2+2==stackA->top){
+                        stackB->rpnArr[++stackB->top]=stackA->rpnArr[stack->top];
+                        break;
+                    }
+                    if(c2+1==stackA->top){
+                        stackB->rpnArr[++stackB->top]=stackA->rpnArr[stackA->top];
+                        break;
+                    }
+                    c1+=3;c2+=c2;
                 }
 
-                else if(stackAB.stackA->rpnArr[c1].tmain.type==TOKEN_FUNCTION && stackAB.stackA->rpnArr[c1-1].num!=NULL){
+                else if(stackA->rpnArr[c1].tmain.type==TOKEN_FUNCTION && stackA->rpnArr[c1-1].num!=NULL){
 
-                    stackAB.stackB->rpnArr[++stackAB.stackB->top].num="Two elements evaluated";
-                    stackAB.stackB->rpnArr[stackAB.stackB->top].tmain.type=TOKEN_NUMERAL;
+                    stackB->rpnArr[++stackB->top].num="Two elements evaluated";
+                    stackB->rpnArr[stackB->top].tmain.type=TOKEN_NUMERAL;
+                    if(c2+1==stackA->top){
+                        stackB->rpnArr[++stackB->top]=stackA->rpnArr[stackA->top];
+                        break;
+                    }
+                    c1+=1; c2+=2;
                 }
 
                 else{
-                    stackAB.stackB->rpnArr[++stackAB.stackB->top]=stackAB.stackA->rpnArr[c1-1];
+                    stackB->rpnArr[++stackB->top]=stackA->rpnArr[c1-1];
+                    c1++;c2++;
                 }
+        }
+           
+            stackSize=stackA->top+1;
+            free(stackA->rpnArr);
+            free(stackA);
+            rpnArr *stackA=(rpnArr*)malloc(sizeof(rpnArr));
+            stackA->top=stackSize-1;
+            if(stackA==NULL){
+                fprintf(stderr,"memory allocation for stackA failed");
+                return 1;
             }
-            temp=stackAB.stackB;
-            stackAB.stackB=stackAB.stackA;
-            stackAB.stackA=temp;
+            stackA->rpnArr=(evalToken*)malloc(stackSize*sizeof(evalToken));
+            if(stackA->rpnArr==NULL){
+                fprintf(stderr, "Memory allocation failed for the stackA->rpnArr");
+                return 1;
+            }
+
+            temp=stackB;
+            stackB=stackA;
+            stackA=temp;
+            c1=1;c2=2;
     }
+}
 
 
