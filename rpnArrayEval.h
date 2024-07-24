@@ -1,8 +1,9 @@
-#ifndef POSTFIX_EVAL_H
-#define POSTFIX_EVAL_H
+#ifndef RPN_ARRAY_EVAL_H
+#define RPN_ARRAY_EVAL_H
 
+#include "Lexer.h"
 #include "postfixParser.h"
-
+#include <math.h>
 /*Token redefined to store the token as well as the associated numeral value 
 * if the token is of type variable or numeral */
 typedef struct evalToken{
@@ -16,6 +17,7 @@ typedef struct rpnArr{
     int top;
 }rpnArr;
 
-double eval(Stack *postfix);
+double calc(int c1, int c2);
+double eval(Stack *postfix,double x0);
 
 #endif

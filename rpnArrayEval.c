@@ -1,27 +1,125 @@
-#include "postfixParser.h"
+#include "rpnArrayEval.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#define pi 3.14156
 
+int stackSize,c1=1,c2=2;
+rpnArr *stackA;
+rpnArr *stackB;
 
-/* User entered value of x, the expression is to be evaluated at. */
-double x0;
-double val;
+double calc(int c1, int c2){
+    if(c1==-1){
+        if(strcmp(stackA->rpnArr[c2].tmain.text,"+")==0)
+            return(stackA->rpnArr[c2-2].num+stackA->rpnArr[c2].num);
 
-double rpnArrayEval(Stack *postfixArray){
-    
+        else if(strcmp(stackA->rpnArr[c2].tmain.text,"-")==0)
+            return(stackA->rpnArr[c2-2].num-stackA->rpnArr[c2].num);
 
-    rpnArr *stackA=(rpnArr*)malloc(sizeof(rpnArr));
+        else if(strcmp(stackA->rpnArr[c2].tmain.text,"*")==0)
+            return(stackA->rpnArr[c2-2].num*stackA->rpnArr[c2].num);
+
+        else if(strcmp(stackA->rpnArr[c2].tmain.text,"/")==0)
+            return(stackA->rpnArr[c2-2].num/stackA->rpnArr[c2].num);
+
+        else if(strcmp(stackA->rpnArr[c2].tmain.text,"^")==0)
+            return(pow(stackA->rpnArr[c2-2].num,stackA->rpnArr[c2].num));
+    }
+
+    else if(c2==-1){
+        if(strcmp(stackA->rpnArr[c1].tmain.text,"sin")==0 )
+            return(sin(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"cos")==0 )
+            return(cos(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"tan")==0 )
+            return(tan(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"cot")==0 )
+            return(1.0/tan(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"cosec")==0 )
+            return(1.0/sin(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"sec")==0 )
+            return(1.0/cos(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"arcsin")==0 )
+            return(asin(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"arccos")==0 )
+            return(acos(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"arctan")==0 )
+            return(atan(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"arccot")==0 )
+            return((pi/2.0)-atan(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"arcsec")==0 )
+            return(acos(1.0/(stackA->rpnArr[c1-1].num)));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"arccosec")==0 )
+            return(asin(1.0/(stackA->rpnArr[c1-1].num)));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"ln")==0 )
+            return(log(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"log")==0 )
+            return(log10(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"fact")==0 ){
+            if((stackA->rpnArr[c1-1].num-(int)stackA->rpnArr[c1-1].num)!=0.0){
+                    printf("Arguement to fact function has to be an integer");
+                    exit(0);
+            }
+            return(tgamma(stackA->rpnArr[c1-1].num+1));
+        }
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"gamma")==0 )
+            return(tgamma(stackA->rpnArr[c1-1].num));
+
+        else if(strcmp(stackA->rpnArr[c1].tmain.text,"erf")==0 )
+            return(erf(stackA->rpnArr[c1-1].num));
+
+        else{
+            printf("Unidentified function: %s",stackA->rpnArr[c1].tmain.text);
+            exit(1);
+        }
+    }
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~rpnEval function~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+double eval(Stack *postfixArray,double x0){
+/*~~~~~~~~~~~~~~~~~~stack definitions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    stackA=(rpnArr*)malloc(sizeof(rpnArr));
     if(stackA==NULL){
         fprintf(stderr,"memory allocation for stackA failed");
         return 1;
-    } 
-    stackA->rpnArr=(evalToken*)malloc(30*sizeof(evalToken));
+    }
+    stackA->rpnArr=(evalToken*)malloc(50*sizeof(evalToken));
     if(stackA->rpnArr==NULL){
         fprintf(stderr, "Memory allocation failed for the stackA->rpnArr");
         return 1;
     }
     
+
+    stackB=(rpnArr*)malloc(sizeof(rpnArr));
+    if(stackA==NULL){
+        fprintf(stderr,"Memory allocation failed for stackB");
+        return 1;
+    }
+    stackB->rpnArr=(evalToken*)malloc(50*sizeof(evalToken));
+    if(stackB->rpnArr==NULL){
+        fprintf(stderr,"Memory allocation for stackB->rpnArr failed");
+        return 1;
+    }
+    stackB->top=-1;
+    rpnArr *temp=stackB;
+
 
     //Accepted from the parser function
     //To be written in the main file: double rpnArrayEval(parser(tokensHead));
@@ -32,68 +130,75 @@ double rpnArrayEval(Stack *postfixArray){
     
         else if(postfixArray->stack[i].type==TOKEN_VARIABLE)
             stackA->rpnArr[i-1].num=x0;
-    
-        else
-            stackA->rpnArr[i-1].num=NULL;
-        stackA->top=postfixArray->top-1;
+
     }
+    stackA->top=postfixArray->top-1;
+    free(postfixArray->stack);
     free(postfixArray);
    
 
-    rpnArr *stackB=(rpnArr*)malloc(sizeof(rpnArr));
-    if(stackA==NULL){
-        fprintf(stderr,"Memory allocation failed for stackB");
-        return 1;
-    }
-    stackB->rpnArr=(evalToken*)malloc(30*sizeof(evalToken));
-    if(stackB->rpnArr==NULL){
-        fprintf(stderr,"Memory allocation for stackB->rpnArr failed");
-        return 1;
-    }
-    stackB->top=-1;
-    rpnArr *temp=stackB;
     
-    int stackSize;
-
-    int c1=1,c2=2;
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~postfix evaluation~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     while(stackA->top!=0 || stackB->top!=0){
+        if(stackA->top==1 && stackA->rpnArr[1].tmain.type==TOKEN_FUNCTION && (stackA->rpnArr[0].tmain.type==TOKEN_NUMBER || stackA->rpnArr[0].tmain.type==TOKEN_VARIABLE))
+            return(calc(1,-1));
+
         while(stackA->top>=2 && c2<=stackA->top){
-                if(stackA->rpnArr[c2].tmain.type==TOKEN_OPERATOR && stackA->rpnArr[c2-1].num!=NULL && stackA->rpnArr[c2-2].num!=NULL){
-                    stackB->rpnArr[++stackB->top].num= "The three elements evaluated";
-                    stackB->rpnArr[stackB->top].tmain.type=TOKEN_NUMERAL;
+                /*~~~~~~~~~~~~~~~~~~~~~~~~subArr:|oprnd|oprnd|operator|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+                if(stackA->rpnArr[c2].tmain.type==TOKEN_OPERATOR && (stackA->rpnArr[c2-1].tmain.type==TOKEN_NUMBER || stackA->rpnArr[c2-1].tmain.type==TOKEN_VARIABLE) && (stackA->rpnArr[c2-2].tmain.type==TOKEN_NUMBER || stackA->rpnArr[c2-2].tmain.type==TOKEN_VARIABLE)) {
+                    stackB->rpnArr[++stackB->top].num=calc(-1,c2);
+                    stackB->rpnArr[stackB->top].tmain.type=TOKEN_NUMBER;
                     if(c2+2==stackA->top){
-                        stackB->rpnArr[++stackB->top]=stackA->rpnArr[stack->top];
                         break;
                     }
                     if(c2+1==stackA->top){
                         stackB->rpnArr[++stackB->top]=stackA->rpnArr[stackA->top];
                         break;
                     }
-                    c1+=3;c2+=c2;
+                    c1+=3;c2+=3;
                 }
 
-                else if(stackA->rpnArr[c1].tmain.type==TOKEN_FUNCTION && stackA->rpnArr[c1-1].num!=NULL){
 
-                    stackB->rpnArr[++stackB->top].num="Two elements evaluated";
-                    stackB->rpnArr[stackB->top].tmain.type=TOKEN_NUMERAL;
-                    if(c2+1==stackA->top){
+                /*~~~~~~~~~~~~~~~~~~~~~~~~subArr: |oprnd|function|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+                else if(stackA->rpnArr[c1].tmain.type==TOKEN_FUNCTION && (stackA->rpnArr[c1-1].tmain.type==TOKEN_NUMBER || stackA->rpnArr[c1-1].tmain.type==TOKEN_VARIABLE)){
+                    stackB->rpnArr[++stackB->top].num=calc(c1,-1);
+                    stackB->rpnArr[stackB->top].tmain.type=TOKEN_NUMBER;
+                    if(c1+1==stackA->top){
                         stackB->rpnArr[++stackB->top]=stackA->rpnArr[stackA->top];
                         break;
                     }
-                    c1+=1; c2+=2;
+                    
+                    if(c2+1==stackA->top){
+                        if(stackA->rpnArr[stackA->top].tmain.type==TOKEN_FUNCTION && (stackA->rpnArr[stackA->top-1].tmain.type==TOKEN_NUMBER || stackA->rpnArr[stackA->top-1].tmain.type==TOKEN_VARIABLE)){                            
+                            stackB->rpnArr[++stackB->top].num=calc(stackA->top,-1);
+                            break;
+                        }
+                        else{
+                            stackB->rpnArr[++stackB->top]=stackA->rpnArr[stackA->top-1];
+                            stackA->rpnArr[++stackB->top]=stackA->rpnArr[stackA->top];
+                            break;
+                        }
+                    }
+                    c1+=2; c2+=2;
                 }
+
 
                 else{
                     stackB->rpnArr[++stackB->top]=stackA->rpnArr[c1-1];
+                    if(c2==stackA->top){
+                        stackB->rpnArr[++stackB->top]=stackA->rpnArr[stackA->top-1];
+                        stackB->rpnArr[++stackB->top]=stackA->rpnArr[stackA->top];
+                        break;
+                    }
                     c1++;c2++;
                 }
         }
-           
+
+        /*~~~~~~~~~~~~~~~~~~~~~~~~~Swapping of Stacks~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
             stackSize=stackA->top+1;
             free(stackA->rpnArr);
             free(stackA);
-            rpnArr *stackA=(rpnArr*)malloc(sizeof(rpnArr));
-            stackA->top=stackSize-1;
+            stackA=(rpnArr*)malloc(sizeof(rpnArr));
             if(stackA==NULL){
                 fprintf(stderr,"memory allocation for stackA failed");
                 return 1;
@@ -103,12 +208,16 @@ double rpnArrayEval(Stack *postfixArray){
                 fprintf(stderr, "Memory allocation failed for the stackA->rpnArr");
                 return 1;
             }
+            stackA->top=stackSize-1;
 
             temp=stackB;
             stackB=stackA;
             stackA=temp;
+        /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/    
             c1=1;c2=2;
     }
+        if(stackA->top==0)
+            return(stackA->rpnArr[stackA->top].num);
+        if(stackB->top==0)
+            return(stackB->rpnArr[stackB->top].num);
 }
-
-
