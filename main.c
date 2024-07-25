@@ -30,8 +30,3 @@ int main(void){
     printf("\nThe value of the entered expression at %lf is %lf",x,val);
     return(0);
 }
-
-
-
-
-
