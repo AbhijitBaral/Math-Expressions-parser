@@ -158,7 +158,7 @@ double eval(Stack *postfixArray,double x0){
                         else{
                             stackB->rpnArr[++(stackB->top)]=stackA->rpnArr[stackA->top-1];
                     printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
-                            stackA->rpnArr[++(stackB->top)]=stackA->rpnArr[stackA->top];
+                            stackB->rpnArr[++(stackB->top)]=stackA->rpnArr[stackA->top];
                     printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                             break;
                         }
@@ -179,21 +179,21 @@ double eval(Stack *postfixArray,double x0){
                     printf("stackB: %lf, top: %d\n",stackB->rpnArr[stackB->top].num,stackB->top);
                     if(c1+1==stackA->top){
                         stackB->rpnArr[++(stackB->top)]=stackA->rpnArr[stackA->top];
-                    printf("stackB: %lf, top: %d\n",stackB->rpnArr[stackB->top].num,stackB->top);
+                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                         break;
                     }
                     
                     if(c1+2==stackA->top){
-                        if(stackA->rpnArr[stackA->top].tmain.type==TOKEN_FUNCTION && (stackA->rpnArr[stackA->top-1].tmain.type==TOKEN_NUMBER || stackA->rpnArr[stackA->top-1].tmain.type==TOKEN_VARIABLE)){
+                        if(stackA->rpnArr[stackA->top].tmain.type==TOKEN_FUNCTION && (stackA->rpnArr[(stackA->top)-1].tmain.type==TOKEN_NUMBER || stackA->rpnArr[(stackA->top)-1].tmain.type==TOKEN_VARIABLE)){
                             stackB->rpnArr[++(stackB->top)].num=calc(stackA->top,-1);
                     printf("stackB: %lf, top: %d\n",stackB->rpnArr[stackB->top].num,stackB->top);
                             break;
                         }
                         else{
-                            stackB->rpnArr[++(stackB->top)]=stackA->rpnArr[stackA->top-1];
-                    printf("stackB: %lf, top: %d\n",stackB->rpnArr[stackB->top].num,stackB->top);
-                            stackA->rpnArr[++(stackB->top)]=stackA->rpnArr[stackA->top];
-                    printf("stackB: %lf, top: %d\n",stackB->rpnArr[stackB->top].num,stackB->top);
+                            stackB->rpnArr[++(stackB->top)]=stackA->rpnArr[(stackA->top)-1];
+                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
+                            stackB->rpnArr[++(stackB->top)]=stackA->rpnArr[stackA->top];
+                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                             break;
                         }
                     }

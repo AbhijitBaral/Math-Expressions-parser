@@ -101,18 +101,3 @@ token* lex(char* input){
     }
     return tokensHead;
 }
-
-    //~~Free allocated memory~~~~~~~~~~~~~~~~~
-    
-/*void freeTokens(token *tokensHead){
-    token *currentToken = tokensHead;
-    while(currentToken!=NULL){
-        token *next=currentToken->nextToken;
-        free(currentToken->text);
-        free(currentToken);
-        currentToken =next;
-    } 
-}*/
-
-
-
