@@ -77,7 +77,7 @@ Stack *parser(token *currentToken){
     }
     opStack->stackSize=1;
     opStack->top=0;
-    opStack->stack->text="\0";
+    opStack->stack->text="NULL";
 
 
     /*~~~~~~~~~~~~~~~~~~~~~~~Postfix Array Definition~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -130,7 +130,7 @@ Stack *parser(token *currentToken){
         }
 
         else if(strcmp(currentToken->text,")")==0){
-            while(opStack->stack[opStack->top].text!=NULL && strcmp(opStack->stack[opStack->top].text,"(")!=0){
+            while(/*opStack->stack[opStack->top].text!=NULL &&*/ strcmp(opStack->stack[opStack->top].text,"(")!=0){
                 pop(opStack);
                 push(postfixArray, pPopped);
             }
