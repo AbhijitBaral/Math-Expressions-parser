@@ -40,6 +40,7 @@ int main(void){
 
         valCalc=eval(postfixArray,5.0);
         printf("%lf\n",valCalc);
+        freeTokens(tokensHead);
         
         if(fgets(line,sizeof(line),file)){
             line[strcspn(line,"\n")]='\0';

@@ -1,3 +1,4 @@
+
 #include "postfixParser.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,10 +56,10 @@ int P(token Token){
     return -1;
 }
 
-
+token *currentToken=NULL;
 //tokensHead is to be passed into this function in the main program
-Stack *parser(token *currentToken){
-
+Stack *parser(token *tokensHead){
+    currentToken=tokensHead;
     /*~~~~~~~~~~~~~~~~~~~~~~~Operator Stack Definition~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     * The operator stack is an "array" of type "token" variables and can be accessed by the
     * "opStack"  pointer */
@@ -130,7 +131,7 @@ Stack *parser(token *currentToken){
         }
 
         else if(strcmp(currentToken->text,")")==0){
-            while(/*opStack->stack[opStack->top].text!=NULL &&*/ strcmp(opStack->stack[opStack->top].text,"(")!=0){
+            while(opStack->stack[opStack->top].text!=NULL && strcmp(opStack->stack[opStack->top].text,"(")!=0){
                 pop(opStack);
                 push(postfixArray, pPopped);
             }
@@ -149,7 +150,9 @@ Stack *parser(token *currentToken){
         push(postfixArray, pPopped);
     }
 
+    //freeTokens(tokensHead);
     free(opStack->stack);
     free(opStack);
     return(postfixArray);
 }    
+

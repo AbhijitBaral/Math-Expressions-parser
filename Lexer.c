@@ -14,7 +14,19 @@
 #include <string.h>
 #include <ctype.h>
 
+void freeTokens(token *tokensHead){
+    token *currentToken=tokensHead->nextToken;
+    while(currentToken!=NULL){
+        free(tokensHead->text);
+        free(tokensHead);
+        tokensHead=currentToken;
+        currentToken=currentToken->nextToken;
+    }
+    free(tokensHead->text);
+    free(tokensHead);
+}
 
+        token *newToken;
 token* lex(char* input){
     token *tokensHead=NULL;
     token *currentToken=NULL;
@@ -26,7 +38,7 @@ token* lex(char* input){
                continue;
         }
 
-        token *newToken=malloc(sizeof(token));
+        newToken=malloc(sizeof(token));
       
         //~~~Numerals~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if (isdigit(*input) || (*input)=='.'){

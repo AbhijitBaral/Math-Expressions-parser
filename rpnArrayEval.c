@@ -8,6 +8,15 @@
 int stackSize,c1=1,c2=2;
 rpnArr *stackA;
 rpnArr *stackB;
+double val=0.0;
+
+void freeStack(rpnArr *stack){
+    for(int i=0; i<=49; i++)
+        free(stack->rpnArr[i].tmain.text);
+    free(stack->rpnArr);
+    free(stack);
+}
+
 
 double calc(int c1, int c2){
     if(c1==-1){
@@ -100,12 +109,14 @@ double eval(Stack *postfixArray,double x0){
         fprintf(stderr,"memory allocation for stackA failed");
         exit(1);
     }
+    memset(stackA,0,sizeof(rpnArr));
     stackA->top=postfixArray->top-1;
     stackA->rpnArr=malloc(50*sizeof(evalToken));
     if(stackA->rpnArr==NULL){
         fprintf(stderr, "Memory allocation failed for the stackA->rpnArr");
         exit(1);
     }
+    memset(stackA->rpnArr,0,50*sizeof(evalToken));
     
 
     stackB=(rpnArr*)malloc(sizeof(rpnArr));
@@ -113,12 +124,14 @@ double eval(Stack *postfixArray,double x0){
         fprintf(stderr,"Memory allocation failed for stackB");
         return 1;
     }
+    memset(stackB,0,sizeof(rpnArr));
     stackB->top=-1;
     stackB->rpnArr=malloc(50*sizeof(evalToken));
     if(stackB->rpnArr==NULL){
         fprintf(stderr,"Memory allocation for stackB->rpnArr failed");
         exit(1);
     }
+    memset(stackB->rpnArr,0,50*sizeof(evalToken));
     rpnArr *temp=stackB;
 
 
@@ -226,12 +239,14 @@ double eval(Stack *postfixArray,double x0){
                 fprintf(stderr,"memory allocation for stackA failed");
                 return 1;
             }
+            memset(stackA,0,sizeof(rpnArr));
             stackA->top=-1;
             stackA->rpnArr=(evalToken*)malloc(stackSize*sizeof(evalToken));
             if(stackA->rpnArr==NULL){
                 fprintf(stderr, "Memory allocation failed for the stackA->rpnArr");
                 return 1;
             }
+            memset(stackA->rpnArr,0,stackSize*sizeof(evalToken));
 
             temp=stackB;
             stackB=stackA;
@@ -240,7 +255,11 @@ double eval(Stack *postfixArray,double x0){
             c1=1;c2=2;
     }
         if(stackA->top==0)
-            return(stackA->rpnArr[stackA->top].num);
+            val=stackA->rpnArr[stackA->top].num;
         if(stackB->top==0)
-            return(stackB->rpnArr[stackB->top].num);
+            val=stackB->rpnArr[stackB->top].num;
+
+        freeStack(stackA);
+        freeStack(stackB);
+        return val;
 }
