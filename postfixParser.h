@@ -12,9 +12,10 @@ typedef struct Stack{
     int top;    
 }Stack;
 
-void push(Stack *Stack, token *Token);
+void push(Stack *Stack, token Token);
 void pop(Stack *Stack);
 int P(token Token);
-Stack* parser(token *currentToken);
+Stack* parser(token *tokenized, char *input);
+void freeStack(Stack *Stack);
 
 #endif

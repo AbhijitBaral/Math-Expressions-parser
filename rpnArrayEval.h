@@ -19,5 +19,6 @@ typedef struct rpnArr{
 
 double calc(int c1, int c2);
 double eval(Stack *postfix,double x0);
+void freeRpnArr(rpnArr *rpnArr);
 
 #endif

@@ -14,32 +14,31 @@
 #include <string.h>
 #include <ctype.h>
 
-void freeTokens(token *tokensHead){
-    token *currentToken=tokensHead->nextToken;
-    while(currentToken!=NULL){
-        free(tokensHead->text);
-        free(tokensHead);
-        tokensHead=currentToken;
-        currentToken=currentToken->nextToken;
+
+void freeTokens(char *input ,token *tokenized){
+    int n=0;
+    while(n<=strlen(input)){
+        free(tokenized[n].text);
+        n++;
     }
-    free(tokensHead->text);
-    free(tokensHead);
+    free(tokenized);
 }
 
-        token *newToken;
-token* lex(char* input){
-    token *tokensHead=NULL;
-    token *currentToken=NULL;
-    int tokenCount=0;
 
+token* lex(char* input){
+
+    token *tokenized=calloc(50,sizeof(token));
+    if(tokenized==NULL){
+        printf("Memory allocation for tokenized array falied");
+        exit(1);
+    }
+    int i=0;
     while (*input !='\0'){
         if((*input)==' '){
                input++;           
                continue;
         }
 
-        newToken=malloc(sizeof(token));
-      
         //~~~Numerals~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if (isdigit(*input) || (*input)=='.'){
             //recognize a number
@@ -48,10 +47,10 @@ token* lex(char* input){
                 input++;
             }
             char *end=input;
-            newToken->text= (char*)malloc((end - start +1)*sizeof(char));
-            strncpy (newToken->text, start, end-start);
-            newToken->text[end-start]='\0';    //Null terminate the string
-            newToken->type=TOKEN_NUMBER;
+            tokenized[i].text=(char*)malloc((end - start +1)*sizeof(char));
+            strncpy (tokenized[i].text, start, end-start);
+            tokenized[i].text[end-start]='\0';    //Null terminate the string
+            tokenized[i].type=TOKEN_NUMBER;
         }
 
         //~~~Elementary Functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -60,56 +59,47 @@ token* lex(char* input){
             while(isalpha(*input)&&(*input)!='x')
                 input++;
             char *end=input;
-            newToken->text= (char*)malloc((end - start +1)*sizeof(char));
-            strncpy( newToken->text, start, end-start);
-            newToken->text[end-start]='\0';
-            newToken->type=TOKEN_FUNCTION;
+            tokenized[i].text=(char*)malloc((end - start +1)*sizeof(char));
+            strncpy( tokenized[i].text, start, end-start);
+            tokenized[i].text[end-start]='\0';
+            tokenized[i].type=TOKEN_FUNCTION;
+            input++;
         }
         
         //~~~Variable 'x'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else if((*input)== 'x'){
-            newToken->text=(char*)malloc(2*sizeof(char));
-            newToken->text[0]='x';
-            newToken->text[1]='\0';
-            newToken->type=TOKEN_VARIABLE;
+            tokenized[i].text=(char*)malloc(2*sizeof(char));
+            tokenized[i].text[0]='x';
+            tokenized[i].text[1]='\0';
+            tokenized[i].type=TOKEN_VARIABLE;
             input++;
         }
 
         //~~~Operators~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else if ((*input)=='+' ||(*input)=='-' ||(*input)=='*' ||(*input)=='/' ||(*input)=='^'){
-            newToken->text=(char*)malloc(2*sizeof(char));
-            newToken->text[0]=*input;
-            newToken->text[1]='\0';
-            newToken->type=TOKEN_OPERATOR;
+            tokenized[i].text=(char*)malloc(2*sizeof(char));
+            tokenized[i].text[0]=*input;
+            tokenized[i].text[1]='\0';
+            tokenized[i].type=TOKEN_OPERATOR;
             input++;
         }
 
         //~~~Parantheses~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else if((*input)=='(' || (*input)==')'){
-            newToken->text=(char*)malloc(2*sizeof(char));
-            newToken->text[0]=*input;
-            newToken->text[1]='\0';
-            newToken->type=TOKEN_PARENTHESES;
+            tokenized[i].text=(char*)malloc(2*sizeof(char));
+            tokenized[i].text[0]=*input;
+            tokenized[i].text[1]='\0';
+            tokenized[i].type=TOKEN_PARENTHESES;
             input++;
         }
-
 
         else{
             printf("MALFORMED EXPRESSION");
             exit(EXIT_FAILURE);
         }
-
-
-        newToken->nextToken=NULL;
-        if(currentToken){
-            currentToken->nextToken=newToken;
-            currentToken=newToken;
-        }
-        else{
-            tokensHead=newToken;
-            currentToken=newToken;
-        }
-        tokenCount++;
+        
+        i++;
     }
-    return tokensHead;
+    //tokenized=realloc(tokenized,(--i)*sizeof(token));
+    return tokenized;
 }

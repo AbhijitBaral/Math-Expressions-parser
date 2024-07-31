@@ -17,10 +17,9 @@ typedef enum{
 typedef struct token{
     char* text;
     tokenType type;
-    struct token *nextToken;
 }token;
 
 token *lex(char *input);
-void freeTokens(token *tokensHead);
+void freeTokens(char *input ,token *tokenized);
 
 #endif
