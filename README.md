@@ -53,7 +53,9 @@ A very simple recursive algorithm though memory heavy and slow.
   of stackA in step 2.  
 
 ->Empty stackA ans repeat steps 1-5 untill the stack has a single element. !!
-
+   
+  
+![ml]https://github.com/AbhijitBaral/Math-Expressions-parser/blob/main/readmeContent/Project%20Inegration.drawio.png
   
 
 
