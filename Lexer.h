@@ -19,7 +19,13 @@ typedef struct token{
     tokenType type;
 }token;
 
-token *lex(char *input);
-void freeTokens(char *input ,token *tokenized);
+typedef struct Stack{
+    token *stack;
+    int stackSize;
+    int top;    
+}Stack;
+
+Stack *lex(char *input);
+void freeStack(Stack *tokenized);
 
 #endif

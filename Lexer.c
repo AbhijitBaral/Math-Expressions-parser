@@ -15,20 +15,27 @@
 #include <ctype.h>
 
 
-void freeTokens(char *input ,token *tokenized){
-    int n=0;
-    while(n<=strlen(input)){
-        free(tokenized[n].text);
-        n++;
+/*~~~~~~~~~~~~~~~~~~~~~~~~Function to free a stack~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+void freeStack(Stack *Stack){
+    for(int n=0;n<=Stack->top; n++){
+        free(Stack->stack[n].text);
+        Stack->stack[n].text=NULL;
     }
-    free(tokenized);
+    free(Stack->stack);
+    free(Stack);
 }
 
 
-token* lex(char* input){
+Stack* lex(char* input){
 
-    token *tokenized=calloc(50,sizeof(token));
+    Stack *tokenized=(Stack*)malloc(sizeof(Stack));
     if(tokenized==NULL){
+        printf("Memory allocation for tokenized array failed");
+        exit(1);
+    }
+    memset(tokenized,0,sizeof(Stack));
+    tokenized->stack=calloc(50,sizeof(token));
+    if(tokenized->stack==NULL){
         printf("Memory allocation for tokenized array falied");
         exit(1);
     }
@@ -47,10 +54,10 @@ token* lex(char* input){
                 input++;
             }
             char *end=input;
-            tokenized[i].text=(char*)malloc((end - start +1)*sizeof(char));
-            strncpy (tokenized[i].text, start, end-start);
-            tokenized[i].text[end-start]='\0';    //Null terminate the string
-            tokenized[i].type=TOKEN_NUMBER;
+            tokenized->stack[i].text=(char*)malloc((end - start +1)*sizeof(char));
+            strncpy (tokenized->stack[i].text, start, end-start);
+            tokenized->stack[i].text[end-start]='\0';    //Null terminate the string
+            tokenized->stack[i].type=TOKEN_NUMBER;
         }
 
         //~~~Elementary Functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,37 +66,37 @@ token* lex(char* input){
             while(isalpha(*input)&&(*input)!='x')
                 input++;
             char *end=input;
-            tokenized[i].text=(char*)malloc((end - start +1)*sizeof(char));
-            strncpy( tokenized[i].text, start, end-start);
-            tokenized[i].text[end-start]='\0';
-            tokenized[i].type=TOKEN_FUNCTION;
-            input++;
+            tokenized->stack[i].text=(char*)malloc((end - start +1)*sizeof(char));
+            strncpy( tokenized->stack[i].text, start, end-start);
+            tokenized->stack[i].text[end-start]='\0';
+            tokenized->stack[i].type=TOKEN_FUNCTION;
+            //input++;
         }
         
         //~~~Variable 'x'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else if((*input)== 'x'){
-            tokenized[i].text=(char*)malloc(2*sizeof(char));
-            tokenized[i].text[0]='x';
-            tokenized[i].text[1]='\0';
-            tokenized[i].type=TOKEN_VARIABLE;
+            tokenized->stack[i].text=(char*)malloc(2*sizeof(char));
+            tokenized->stack[i].text[0]='x';
+            tokenized->stack[i].text[1]='\0';
+            tokenized->stack[i].type=TOKEN_VARIABLE;
             input++;
         }
 
         //~~~Operators~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else if ((*input)=='+' ||(*input)=='-' ||(*input)=='*' ||(*input)=='/' ||(*input)=='^'){
-            tokenized[i].text=(char*)malloc(2*sizeof(char));
-            tokenized[i].text[0]=*input;
-            tokenized[i].text[1]='\0';
-            tokenized[i].type=TOKEN_OPERATOR;
+            tokenized->stack[i].text=(char*)malloc(2*sizeof(char));
+            tokenized->stack[i].text[0]=*input;
+            tokenized->stack[i].text[1]='\0';
+            tokenized->stack[i].type=TOKEN_OPERATOR;
             input++;
         }
 
         //~~~Parantheses~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else if((*input)=='(' || (*input)==')'){
-            tokenized[i].text=(char*)malloc(2*sizeof(char));
-            tokenized[i].text[0]=*input;
-            tokenized[i].text[1]='\0';
-            tokenized[i].type=TOKEN_PARENTHESES;
+            tokenized->stack[i].text=(char*)malloc(2*sizeof(char));
+            tokenized->stack[i].text[0]=*input;
+            tokenized->stack[i].text[1]='\0';
+            tokenized->stack[i].type=TOKEN_PARENTHESES;
             input++;
         }
 
@@ -99,7 +106,9 @@ token* lex(char* input){
         }
         
         i++;
+        tokenized->top=i-1;
     }
-    //tokenized=realloc(tokenized,(--i)*sizeof(token));
+    tokenized->stack=realloc(tokenized->stack,(tokenized->top+1)*sizeof(token));
+    tokenized->stackSize=tokenized->top+1;
     return tokenized;
 }

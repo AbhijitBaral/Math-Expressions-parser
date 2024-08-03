@@ -11,7 +11,7 @@ int main(void){
 
     printf("String: %s\n",input);
     int x=0;
-    while(x<=strlen(input)){
+    while(tokenized[x].text!=NULL){
         printf("Token: %s, Type: %d\n",tokenized[x].text, tokenized[x].type);
         x++;
     }

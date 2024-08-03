@@ -112,7 +112,7 @@ double eval(Stack *postfixArray, double x0){
         exit(1);
     }
     memset(stackA,0,sizeof(rpnArr));
-    stackA->top=postfixArray->top-1;
+    stackA->top=postfixArray->top;
     stackA->rpnArr=malloc(50*sizeof(evalToken));
     if(stackA->rpnArr==NULL){
         fprintf(stderr, "Memory allocation failed for the stackA->rpnArr");
@@ -238,21 +238,27 @@ double eval(Stack *postfixArray, double x0){
 
 
                 else{
-                    stackB->rpnArr[++(stackB->top)].tmain.text=malloc(strlen(stackA->rpnArr[c1-1].tmain.text)+1);
-                    strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[c1-1].tmain.text);
-                    stackB->rpnArr[stackB->top].tmain.type=stackA->rpnArr[c1-1].tmain.type;
+                    stackB->rpnArr[++stackB->top].tmain.type=stackA->rpnArr[c1-1].tmain.type;
                     stackB->rpnArr[stackB->top].num=stackA->rpnArr[c1-1].num;
+                    if(stackA->rpnArr[c1-1].tmain.type==TOKEN_OPERATOR || stackA->rpnArr[c1-1].tmain.type==TOKEN_FUNCTION){
+                        stackB->rpnArr[stackB->top].tmain.text=malloc(strlen(stackA->rpnArr[c1-1].tmain.text)+1);
+                        strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[c1-1].tmain.text);
+                    }
                     printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                     if(c2==stackA->top){
-                        stackB->rpnArr[++(stackB->top)].tmain.text=malloc(strlen(stackA->rpnArr[stackA->top-1].tmain.text)+1);
-                        strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top-1].tmain.text);
-                        stackB->rpnArr[stackB->top].tmain.type=stackA->rpnArr[stackA->top-1].tmain.type;
+                        stackB->rpnArr[++stackB->top].tmain.type=stackA->rpnArr[stackA->top-1].tmain.type;
                         stackB->rpnArr[stackB->top].num=stackA->rpnArr[stackA->top-1].num;
+                        if(stackA->rpnArr[stackA->top-1].tmain.type==TOKEN_OPERATOR || stackA->rpnArr[stackA->top-1].tmain.type==TOKEN_FUNCTION){
+                            stackB->rpnArr[stackB->top].tmain.text=malloc(strlen(stackA->rpnArr[stackA->top-1].tmain.text)+1);
+                            strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top-1].tmain.text);
+                        }
                     printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
-                        stackB->rpnArr[++(stackB->top)].tmain.text=malloc(strlen(stackA->rpnArr[stackA->top].tmain.text)+1);
-                        strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top].tmain.text);
-                        stackB->rpnArr[stackB->top].tmain.type=stackA->rpnArr[stackA->top].tmain.type;
+                        stackB->rpnArr[++stackB->top].tmain.type=stackA->rpnArr[stackA->top].tmain.type;
                         stackB->rpnArr[stackB->top].num=stackA->rpnArr[stackA->top].num;
+                        if(stackA->rpnArr[stackA->top].tmain.type==TOKEN_OPERATOR || stackA->rpnArr[stackA->top].tmain.type==TOKEN_FUNCTION){
+                        stackB->rpnArr[stackB->top].tmain.text=malloc(strlen(stackA->rpnArr[stackA->top].tmain.text)+1);
+                        strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top].tmain.text);
+                        }
                     printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                         break;
                     }
@@ -260,10 +266,11 @@ double eval(Stack *postfixArray, double x0){
                 }
         }
 
+        printf("\nstackA top=%d\nstackB top=%d\n",stackA->top,stackB->top);
         printf("swapped\n\n");
 
         /*~~~~~~~~~~~~~~~~~~~~~~~~~Swapping of Stacks~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-            stackSize=stackA->top+1;
+            stackSize=stackB->top+1;
             freeRpnArr(stackA);
             stackA=(rpnArr*)malloc(sizeof(rpnArr));
             memset(stackA,0,sizeof(rpnArr));
@@ -273,7 +280,7 @@ double eval(Stack *postfixArray, double x0){
             }
             stackA->top=-1;
             stackA->rpnArr=(evalToken*)malloc(stackSize*sizeof(evalToken));
-            memset(stackA,0,sizeof(rpnArr));
+            memset(stackA->rpnArr,0,stackSize*sizeof(evalToken));
             if(stackA->rpnArr==NULL){
                 fprintf(stderr, "Memory allocation failed for the stackA->rpnArr");
                 return 1;
