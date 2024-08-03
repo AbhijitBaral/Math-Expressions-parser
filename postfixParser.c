@@ -7,40 +7,39 @@
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~Push~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *Function to push a token onto the opStack */
-void push(Stack *Stack, token *Token){
-    Stack->stack=(token*)realloc(Stack->stack, sizeof(token)*(Stack->stackSize+1));
-    if(Stack->stack==NULL){
-        fprintf(stderr, "Memory reallocation while pushing failed\n");
-        free(Stack->stack);
-        return;
+void push(Stack *Stack, token Token){
+    if(Stack->top<=Stack->stackSize){
+        Stack->top+=1;
+        Stack->stack[Stack->top].text=(char*)malloc((strlen(Token.text)+1)*sizeof(char));
+        strcpy(Stack->stack[Stack->top].text,Token.text);
+        Stack->stack[Stack->top].type=Token.type;
+        }
+    else{
+        printf("Stack overflow");
+        exit(1);
     }
-    Stack->stackSize=(Stack->stackSize)+1;
-    Stack->top=Stack->stackSize-1;
-    Stack->stack[Stack->top]=*Token;
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Pop~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Function to Pop a token and store in a variable of type token.If the popped element is to 
+ * Function to Pop a token and store in a variable of type token.If the popped element is to
  * be used the pPopped pointer can be used. A pointer has been used only because the defined
  * push function accepts pointer to type token for pushing the token */
 
 token popped;
-token *pPopped=NULL;
 void pop(Stack *Stack){
-    if(Stack->stackSize==1){
-        fprintf(stderr,"Stack Underflow\n");
-        return;
+    if(Stack->top>=0){
+        free(popped.text);
+        popped.text=malloc((strlen(Stack->stack[Stack->top].text)+1)*sizeof(char));
+        strcpy(popped.text,Stack->stack[Stack->top].text);
+        popped.type=Stack->stack[Stack->top].type;
+        free(Stack->stack[Stack->top].text);
+        Stack->stack[Stack->top].text=NULL;
+        Stack->top-=1;
     }
-    Stack->top=Stack->stackSize-1;
-    popped=Stack->stack[Stack->top];
-    Stack->stack=realloc(Stack->stack, sizeof(token)*(--(Stack->stackSize)));
-    if(Stack->stack==NULL && Stack->stackSize>0){
-        fprintf(stderr, "Memory reallocation while popping failed\n");
-        free(Stack->stack);
-        return;
+    else{
+        printf("Stack underflow");
+        exit(1);
     }
-    Stack->top=Stack->stackSize-1;
-    pPopped=&(popped);
 }
 
 /*~~~~~~~~~~~~~~~Precedence mapper~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,10 +55,11 @@ int P(token Token){
     return -1;
 }
 
-token *currentToken=NULL;
 //tokensHead is to be passed into this function in the main program
-Stack *parser(token *tokensHead){
-    currentToken=tokensHead;
+Stack *parser(Stack *tokenized){
+    popped.type=0;
+    popped.text=(char*)calloc(1,sizeof(char));
+
     /*~~~~~~~~~~~~~~~~~~~~~~~Operator Stack Definition~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     * The operator stack is an "array" of type "token" variables and can be accessed by the
     * "opStack"  pointer */
@@ -69,16 +69,17 @@ Stack *parser(token *tokensHead){
         fprintf(stderr,"Memory allocation for opStack failed");
         return NULL;
     }
+    memset(opStack,0,sizeof(Stack));
 
-    opStack->stack=(token*)malloc(sizeof(token));
+    opStack->stack=(token*)malloc(50*sizeof(token));
     if(opStack->stack==NULL){
         fprintf(stderr,"Memory allocation for opStack->stack failed");
         free(opStack);
         return NULL;
     }
-    opStack->stackSize=1;
-    opStack->top=0;
-    opStack->stack->text="NULL";
+    memset(opStack->stack,0,50*sizeof(token));
+    opStack->stackSize=50;
+    opStack->top=-1;
 
 
     /*~~~~~~~~~~~~~~~~~~~~~~~Postfix Array Definition~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,8 +93,9 @@ Stack *parser(token *tokensHead){
         fprintf(stderr,"memory allocation for postfixArray failed");
         return NULL;
     }
+    memset(postfixArray,0,sizeof(Stack));
 
-    postfixArray->stack=(token*)malloc(sizeof(token));
+    postfixArray->stack=(token*)calloc(50,sizeof(token));
     if(postfixArray->stack==NULL){
         fprintf(stderr,"Memory allocation for postfixArray->stack failed");
         free(opStack->stack);
@@ -101,58 +103,67 @@ Stack *parser(token *tokensHead){
         free(postfixArray);
         return NULL;
     }
-    postfixArray->stackSize=1;
-    postfixArray->top=0;
-    postfixArray->stack->text=NULL;
+    postfixArray->stackSize=50;
+    postfixArray->top=-1;
 
     
     /*~~~~~~~~~~~~~~~~~~~~~~ Shunting Yard Algorithm~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    while(currentToken !=NULL){
-        if (currentToken->type == TOKEN_NUMBER ||currentToken->type == TOKEN_VARIABLE){
-            push(postfixArray, currentToken);
+    int i=0;
+    while(i<=tokenized->top){
+        if (tokenized->stack[i].type == TOKEN_NUMBER ||tokenized->stack[i].type == TOKEN_VARIABLE){
+            push(postfixArray, tokenized->stack[i]);
         }
 
-        else if(currentToken->type == TOKEN_FUNCTION){
-            push(opStack, currentToken);
+        else if(tokenized->stack[i].type == TOKEN_FUNCTION){
+            push(opStack, tokenized->stack[i]);
         }
 
-        else if(currentToken->type == TOKEN_OPERATOR){
-            //This while loop is to pop elemnts from the opStack
-            while(strcmp(opStack->stack[opStack->top].text,"(")!=0 && (P(opStack->stack[opStack->top])>P(*currentToken) ||(P(opStack->stack[opStack->top])==P(*currentToken)))){
-            
-                pop(opStack);
-                push(postfixArray,pPopped);
+        else if(tokenized->stack[i].type == TOKEN_OPERATOR){
+            if(opStack->top==-1)
+                push(opStack,tokenized->stack[i]);
+            else{
+                //This while loop is to pop elemnts from the opStack
+                while(opStack->top>=0 && strcmp(opStack->stack[opStack->top].text,"(")!=0 && P(opStack->stack[opStack->top])>=P(tokenized->stack[i])){
+                    pop(opStack);
+                    push(postfixArray, popped);
+                }
+                push(opStack, tokenized->stack[i]);
             }
-            push(opStack, currentToken);
         }
 
-        else if(strcmp(currentToken->text,"(")==0){
-            push(opStack, currentToken);
+        else if(strcmp(tokenized->stack[i].text,"(")==0){
+            push(opStack, tokenized->stack[i]);
         }
 
-        else if(strcmp(currentToken->text,")")==0){
-            while(opStack->stack[opStack->top].text!=NULL && strcmp(opStack->stack[opStack->top].text,"(")!=0){
+        else if(strcmp(tokenized->stack[i].text,")")==0){
+            while(/*opStack->stack[opStack->top].text!=NULL*/opStack->top!=-1 && strcmp(opStack->stack[opStack->top].text,"(")!=0){
                 pop(opStack);
-                push(postfixArray, pPopped);
+                push(postfixArray, popped);
             }
             if(strcmp(opStack->stack[opStack->top].text,"(")==0)
                 pop(opStack);
             if(opStack->stack[opStack->top].type==TOKEN_FUNCTION){
                 pop(opStack);
-                push(postfixArray, pPopped);
+                push(postfixArray, popped);
             }
         }
-        currentToken=currentToken->nextToken;
+        i=i+1;
     }
 
-    while(opStack->stackSize>1){
+    while(opStack->top>=0){
         pop(opStack);
-        push(postfixArray, pPopped);
+        push(postfixArray, popped);
     }
 
-    //freeTokens(tokensHead);
-    free(opStack->stack);
-    free(opStack);
+    if(popped.text!=NULL)
+        free(popped.text);
+
+    //Freeing the tokenized array
+    freeStack(tokenized);
+
+    //Freeing opStack
+    freeStack(opStack);
+
     return(postfixArray);
 }    
 

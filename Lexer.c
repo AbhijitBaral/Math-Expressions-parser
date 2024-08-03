@@ -14,32 +14,38 @@
 #include <string.h>
 #include <ctype.h>
 
-void freeTokens(token *tokensHead){
-    token *currentToken=tokensHead->nextToken;
-    while(currentToken!=NULL){
-        free(tokensHead->text);
-        free(tokensHead);
-        tokensHead=currentToken;
-        currentToken=currentToken->nextToken;
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~Function to free a stack~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+void freeStack(Stack *Stack){
+    for(int n=0;n<=Stack->top; n++){
+        free(Stack->stack[n].text);
+        Stack->stack[n].text=NULL;
     }
-    free(tokensHead->text);
-    free(tokensHead);
+    free(Stack->stack);
+    free(Stack);
 }
 
-        token *newToken;
-token* lex(char* input){
-    token *tokensHead=NULL;
-    token *currentToken=NULL;
-    int tokenCount=0;
 
+Stack* lex(char* input){
+
+    Stack *tokenized=(Stack*)malloc(sizeof(Stack));
+    if(tokenized==NULL){
+        printf("Memory allocation for tokenized array failed");
+        exit(1);
+    }
+    memset(tokenized,0,sizeof(Stack));
+    tokenized->stack=calloc(50,sizeof(token));
+    if(tokenized->stack==NULL){
+        printf("Memory allocation for tokenized array falied");
+        exit(1);
+    }
+    int i=0;
     while (*input !='\0'){
         if((*input)==' '){
                input++;           
                continue;
         }
 
-        newToken=malloc(sizeof(token));
-      
         //~~~Numerals~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if (isdigit(*input) || (*input)=='.'){
             //recognize a number
@@ -48,10 +54,10 @@ token* lex(char* input){
                 input++;
             }
             char *end=input;
-            newToken->text= (char*)malloc((end - start +1)*sizeof(char));
-            strncpy (newToken->text, start, end-start);
-            newToken->text[end-start]='\0';    //Null terminate the string
-            newToken->type=TOKEN_NUMBER;
+            tokenized->stack[i].text=(char*)malloc((end - start +1)*sizeof(char));
+            strncpy (tokenized->stack[i].text, start, end-start);
+            tokenized->stack[i].text[end-start]='\0';    //Null terminate the string
+            tokenized->stack[i].type=TOKEN_NUMBER;
         }
 
         //~~~Elementary Functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -60,56 +66,49 @@ token* lex(char* input){
             while(isalpha(*input)&&(*input)!='x')
                 input++;
             char *end=input;
-            newToken->text= (char*)malloc((end - start +1)*sizeof(char));
-            strncpy( newToken->text, start, end-start);
-            newToken->text[end-start]='\0';
-            newToken->type=TOKEN_FUNCTION;
+            tokenized->stack[i].text=(char*)malloc((end - start +1)*sizeof(char));
+            strncpy( tokenized->stack[i].text, start, end-start);
+            tokenized->stack[i].text[end-start]='\0';
+            tokenized->stack[i].type=TOKEN_FUNCTION;
+            //input++;
         }
         
         //~~~Variable 'x'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else if((*input)== 'x'){
-            newToken->text=(char*)malloc(2*sizeof(char));
-            newToken->text[0]='x';
-            newToken->text[1]='\0';
-            newToken->type=TOKEN_VARIABLE;
+            tokenized->stack[i].text=(char*)malloc(2*sizeof(char));
+            tokenized->stack[i].text[0]='x';
+            tokenized->stack[i].text[1]='\0';
+            tokenized->stack[i].type=TOKEN_VARIABLE;
             input++;
         }
 
         //~~~Operators~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else if ((*input)=='+' ||(*input)=='-' ||(*input)=='*' ||(*input)=='/' ||(*input)=='^'){
-            newToken->text=(char*)malloc(2*sizeof(char));
-            newToken->text[0]=*input;
-            newToken->text[1]='\0';
-            newToken->type=TOKEN_OPERATOR;
+            tokenized->stack[i].text=(char*)malloc(2*sizeof(char));
+            tokenized->stack[i].text[0]=*input;
+            tokenized->stack[i].text[1]='\0';
+            tokenized->stack[i].type=TOKEN_OPERATOR;
             input++;
         }
 
         //~~~Parantheses~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else if((*input)=='(' || (*input)==')'){
-            newToken->text=(char*)malloc(2*sizeof(char));
-            newToken->text[0]=*input;
-            newToken->text[1]='\0';
-            newToken->type=TOKEN_PARENTHESES;
+            tokenized->stack[i].text=(char*)malloc(2*sizeof(char));
+            tokenized->stack[i].text[0]=*input;
+            tokenized->stack[i].text[1]='\0';
+            tokenized->stack[i].type=TOKEN_PARENTHESES;
             input++;
         }
-
 
         else{
             printf("MALFORMED EXPRESSION");
             exit(EXIT_FAILURE);
         }
-
-
-        newToken->nextToken=NULL;
-        if(currentToken){
-            currentToken->nextToken=newToken;
-            currentToken=newToken;
-        }
-        else{
-            tokensHead=newToken;
-            currentToken=newToken;
-        }
-        tokenCount++;
+        
+        i++;
+        tokenized->top=i-1;
     }
-    return tokensHead;
+    tokenized->stack=realloc(tokenized->stack,(tokenized->top+1)*sizeof(token));
+    tokenized->stackSize=tokenized->top+1;
+    return tokenized;
 }

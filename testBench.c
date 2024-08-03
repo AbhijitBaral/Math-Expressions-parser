@@ -6,8 +6,7 @@ int main(void){
     char valAct[250];
     double valCalc;
     token *currentToken;
-    token *tokensHead;
-    Stack *postfixArray;
+    Stack *tokenized, *postfixArray;
 
     int n=1;
     FILE *file=fopen("testCases.txt","r");
@@ -26,21 +25,16 @@ int main(void){
             continue;
 
         printf("\n%d\n~~~~~~~~~~~~~~~~~~~~~~~~~~~\n%s\n",n++,line);
-        tokensHead=lex(line);
-        currentToken=tokensHead;
-        while(currentToken!=NULL){
-             printf("Token: %s, Type: %d\n",currentToken->text, currentToken->type);
-             currentToken=currentToken->nextToken;
-        }
-
-        postfixArray=parser(tokensHead);
+        tokenized=lex(line);
+        for(int i=0; i<=tokenized->top; i++)
+            printf("Token: %s, type: %d\n",tokenized->stack[i].text,tokenized->stack[i].type);
+        postfixArray=parser(tokenized);
         printf("\nPostfix:\n");
-        for(int i=1;i<=postfixArray->top;i++)
+        for(int i=0; i<=postfixArray->top;i++)
             printf("%s\n",postfixArray->stack[i].text);
 
         valCalc=eval(postfixArray,5.0);
         printf("%lf\n",valCalc);
-        freeTokens(tokensHead);
         
         if(fgets(line,sizeof(line),file)){
             line[strcspn(line,"\n")]='\0';
