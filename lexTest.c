@@ -5,7 +5,7 @@
 #include <string.h>
 
 int main(){
-    char input[]="((arccosec(0.33 * x))/ln(4.60 * x)-arccosec(6.44 * x))/arccosec(3.86 * x)";
+    char input[]="sin(x)+34*x^2-32/ln(x)";
     printf("%s\n",input);
     Stack* tokenized=lex(input);
     for(int i=0; i<=tokenized->top; i++)
