@@ -50,7 +50,7 @@ double eval(Stack* postfixArray, double x0);
 -
 
 A very simple recursive algorithm though memory heavy and slow.  
-* Sequentially Scan across the received Array of tokens.  
+* Sequentially Scans across the received Array of tokens.  
 
 * If a sub-array of the form |operand | operand | operator | or |operand | function | is found,evaluate,    
   store in a token of type numeral. Push the token into stackA.  
