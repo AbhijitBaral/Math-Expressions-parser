@@ -165,11 +165,9 @@ double eval(Stack *postfixArray, double x0){
                 if(stackA->rpnArr[c2].tmain.type==TOKEN_OPERATOR && (stackA->rpnArr[c2-1].tmain.type==TOKEN_NUMBER || stackA->rpnArr[c2-1].tmain.type==TOKEN_VARIABLE) && (stackA->rpnArr[c2-2].tmain.type==TOKEN_NUMBER || stackA->rpnArr[c2-2].tmain.type==TOKEN_VARIABLE)) {
                     stackB->rpnArr[++(stackB->top)].num=calc(-1,c2);
                     stackB->rpnArr[stackB->top].tmain.type=TOKEN_NUMBER;
-                    printf("stackB: %lf, top: %d\n",stackB->rpnArr[stackB->top].num,stackB->top);
                     if(c2+2==stackA->top){
                         if(stackA->rpnArr[stackA->top].tmain.type==TOKEN_FUNCTION && (stackA->rpnArr[stackA->top-1].tmain.type==TOKEN_NUMBER || stackA->rpnArr[stackA->top-1].tmain.type==TOKEN_VARIABLE)){
                             stackB->rpnArr[++(stackB->top)].num=calc(stackA->top,-1);
-                    printf("stackB: %lf, top: %d\n",stackB->rpnArr[stackB->top].num,stackB->top);
                             break;
                         }
                     
@@ -180,14 +178,12 @@ double eval(Stack *postfixArray, double x0){
                             stackB->rpnArr[stackB->top].tmain.text=malloc(strlen(stackA->rpnArr[stackA->top-1].tmain.text)+1);
                             strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top-1].tmain.text);
                             }
-                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                             stackB->rpnArr[++stackB->top].tmain.type=stackA->rpnArr[stackA->top].tmain.type;
                             stackB->rpnArr[stackB->top].num=stackA->rpnArr[stackA->top].num;
                             if(stackA->rpnArr[stackA->top].tmain.type==TOKEN_FUNCTION || stackA->rpnArr[stackA->top].tmain.type==TOKEN_OPERATOR){
                             stackB->rpnArr[stackB->top].tmain.text=malloc(strlen(stackA->rpnArr[stackA->top].tmain.text)+1);
                             strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top].tmain.text);
                             }
-                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                             break;
                         }
                     }
@@ -196,7 +192,6 @@ double eval(Stack *postfixArray, double x0){
                         strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top].tmain.text);
                         stackB->rpnArr[stackB->top].tmain.type=stackA->rpnArr[stackA->top].tmain.type;
                         stackB->rpnArr[stackB->top].num=stackA->rpnArr[stackA->top].num;
-                        printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                         break;
                     }
                     c1+=3;c2+=3;
@@ -207,20 +202,17 @@ double eval(Stack *postfixArray, double x0){
                 else if(stackA->rpnArr[c1].tmain.type==TOKEN_FUNCTION && (stackA->rpnArr[c1-1].tmain.type==TOKEN_NUMBER || stackA->rpnArr[c1-1].tmain.type==TOKEN_VARIABLE)){
                     stackB->rpnArr[++(stackB->top)].num=calc(c1,-1);
                     stackB->rpnArr[stackB->top].tmain.type=TOKEN_NUMBER;
-                    printf("stackB: %lf, top: %d\n",stackB->rpnArr[stackB->top].num,stackB->top);
                     if(c1+1==stackA->top){
                         stackB->rpnArr[++(stackB->top)].tmain.text=malloc(strlen(stackA->rpnArr[stackA->top].tmain.text)+1);
                         strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top].tmain.text);
                         stackB->rpnArr[stackB->top].tmain.type=stackA->rpnArr[stackA->top].tmain.type;
                         stackB->rpnArr[stackB->top].num=stackA->rpnArr[stackA->top].num;
-                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                         break;
                     }
                     
                     if(c1+2==stackA->top){
                         if(stackA->rpnArr[stackA->top].tmain.type==TOKEN_FUNCTION && (stackA->rpnArr[(stackA->top)-1].tmain.type==TOKEN_NUMBER || stackA->rpnArr[(stackA->top)-1].tmain.type==TOKEN_VARIABLE)){
                             stackB->rpnArr[++(stackB->top)].num=calc(stackA->top,-1);
-                    printf("stackB: %lf, top: %d\n",stackB->rpnArr[stackB->top].num,stackB->top);
                             break;
                         }
                         else{
@@ -228,12 +220,10 @@ double eval(Stack *postfixArray, double x0){
                             strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top-1].tmain.text);
                             stackB->rpnArr[stackB->top].tmain.type=stackA->rpnArr[stackA->top-1].tmain.type;
                             stackB->rpnArr[stackB->top].num=stackA->rpnArr[stackA->top-1].num;
-                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                             stackB->rpnArr[++(stackB->top)].tmain.text=malloc(strlen(stackA->rpnArr[stackA->top].tmain.text)+1);
                             strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top].tmain.text);
                             stackB->rpnArr[stackB->top].tmain.type=stackA->rpnArr[stackA->top].tmain.type;
                             stackB->rpnArr[stackB->top].num=stackA->rpnArr[stackA->top].num;
-                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                             break;
                         }
                     }
@@ -248,7 +238,6 @@ double eval(Stack *postfixArray, double x0){
                         stackB->rpnArr[stackB->top].tmain.text=malloc(strlen(stackA->rpnArr[c1-1].tmain.text)+1);
                         strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[c1-1].tmain.text);
                     }
-                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                     if(c2==stackA->top){
                         stackB->rpnArr[++stackB->top].tmain.type=stackA->rpnArr[stackA->top-1].tmain.type;
                         stackB->rpnArr[stackB->top].num=stackA->rpnArr[stackA->top-1].num;
@@ -256,26 +245,19 @@ double eval(Stack *postfixArray, double x0){
                             stackB->rpnArr[stackB->top].tmain.text=malloc(strlen(stackA->rpnArr[stackA->top-1].tmain.text)+1);
                             strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top-1].tmain.text);
                         }
-                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                         stackB->rpnArr[++stackB->top].tmain.type=stackA->rpnArr[stackA->top].tmain.type;
                         stackB->rpnArr[stackB->top].num=stackA->rpnArr[stackA->top].num;
                         if(stackA->rpnArr[stackA->top].tmain.type==TOKEN_OPERATOR || stackA->rpnArr[stackA->top].tmain.type==TOKEN_FUNCTION){
                         stackB->rpnArr[stackB->top].tmain.text=malloc(strlen(stackA->rpnArr[stackA->top].tmain.text)+1);
                         strcpy(stackB->rpnArr[stackB->top].tmain.text,stackA->rpnArr[stackA->top].tmain.text);
                         }
-                    printf("stackB: %s, top: %d\n",stackB->rpnArr[stackB->top].tmain.text,stackB->top);
                         break;
                     }
                     c1++;c2++;
                 }
         }
 
-        printf("\n");
-        for(int x=0;x<=stackA->top;x++)
-            printf("%s",stackA->rpnArr[x].tmain.text);
-        printf("\nstackA top=%d\nstackB top=%d\n",stackA->top,stackB->top);
-        printf("swapped\n\n");
-
+        
         /*~~~~~~~~~~~~~~~~~~~~~~~~~Swapping of Stacks~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
             stackSize=stackB->top+1;
             freeRpnArr(stackA);
