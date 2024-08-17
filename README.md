@@ -10,10 +10,10 @@ Key things to keep in consideration while using this library:
  * Division operation has been assigned greater priority than multiplication. So the the order of operation around consecutive multiplication and division has to be explicitly specified by the use of parantheses.
  * The order of operation has to be explicitly specified if same operator is being consecutively used for more than once.
  * Supported funtions:
-  *sin, cos, tan, cot, cosec, sec
-  *arcsin, arccos, arctan, arccot, arccosec, arcsec
-  *ln(natural logarithm), log(base 10 logarithm)
-  *fact(factorial), gamma
+  ** sin, cos, tan, cot, cosec, sec
+  ** arcsin, arccos, arctan, arccot, arccosec, arcsec
+  ** ln(natural logarithm), log(base 10 logarithm)
+  ** fact(factorial), gamma
    
 ![ml](https://github.com/AbhijitBaral/Math-Expressions-parser/blob/main/readmeContent/Project%20Inegration.drawio.png)  
 
